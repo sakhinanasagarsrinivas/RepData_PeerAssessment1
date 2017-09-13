@@ -68,6 +68,14 @@ df <- data.frame(Steps, Interval)
 
 ```r
 library(ggplot2)
+```
+
+```
+## Stackoverflow is a great place to get help:
+## http://stackoverflow.com/tags/ggplot2.
+```
+
+```r
 g <- ggplot(df, aes(Interval, Steps))
 g + geom_line(colour="blue")+ggtitle("Time Series Plot of the 5-minute Interval\n and the Average Number of Steps,\n Taken across all Days") + ylab("Average Number of Steps")
 ```
