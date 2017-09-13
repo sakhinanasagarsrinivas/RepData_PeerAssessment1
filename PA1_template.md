@@ -5,9 +5,7 @@ date: "13 September 2017"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
+
 
 # Reproducible Research: Peer Assessment 1
 
@@ -17,7 +15,8 @@ It is now possible to collect a large amount of data about personal movement usi
 This assignment makes use of data from a personal activity monitoring device. This device collects data at 5 minute intervals through out the day. The data consists of two months of data from an anonymous individual collected during the months of October and November, 2012 and include the number of steps taken in 5 minute intervals each day.
 
 ## Loading and preprocessing the data
-```{r}
+
+```r
 # Set working directory
 # setwd("/home/sagar/RepData_PeerAssessment1")
 
@@ -41,7 +40,8 @@ activity$interval <- as.factor(activity$interval)
 l <- levels(activity$interval)
 ```
 ## Average total number of steps taken per day
-```{r fig.width=10, fig.height=12}
+
+```r
 # Use tapply function to find the total, mean and median number of steps each day
 totalSteps <- tapply(activity$steps, activity$date, sum, na.rm=T)
 avgSteps <- tapply(activity$steps, activity$date, mean, na.rm=T)
@@ -50,8 +50,11 @@ hist(totalSteps, breaks=10, col="red", main="Distribution of the total Number of
 hist(as.vector(avgSteps), breaks=10, col="blue", main="Distribution of the Average Number of steps each day", xlab="Average Number of Steps")
 ```
 
+![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-1.png)
+
 ## Average daily activity pattern
-```{r}
+
+```r
 # Find the average number of steps grouped by intereval
 Steps = tapply(activity$steps, activity$interval, mean, na.rm=T)
 
@@ -62,22 +65,46 @@ Interval <- as.numeric(l)
 df <- data.frame(Steps, Interval)
 ```
 
-```{r fig.width=10, fig.height=6}
+
+```r
 library(ggplot2)
 g <- ggplot(df, aes(Interval, Steps))
 g + geom_line(colour="blue")+ggtitle("Time Series Plot of the 5-minute Interval\n and the Average Number of Steps,\n Taken across all Days") + ylab("Average Number of Steps")
 ```
 
+![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4-1.png)
+
 ## Imputing missing values
-```{r}
+
+```r
 # Missing data
 missing <- is.na(activity)
 # Number of missing values
 (n.missing <- sum(missing))
+```
 
+```
+## [1] 2304
+```
+
+```r
 # Impute data using the mice (multivariate imputation chains equation)
 library(mice)
+```
+
+```
+## Error in library(mice): there is no package called 'mice'
+```
+
+```r
 library(Amelia)
+```
+
+```
+## Error in library(Amelia): there is no package called 'Amelia'
+```
+
+```r
 set.seed(144)
 # imputedData <- complete(mice(activity))
 # Number of total steps each day after imputation
@@ -94,7 +121,20 @@ totStepsImp <- tapply(activityCopy$steps, activityCopy$date, sum)
 
 # Summary statistics before and after imputing
 summary(totalSteps)
+```
+
+```
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##       0    6778   10395    9354   12811   21194
+```
+
+```r
 summary(totStepsImp)
+```
+
+```
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##      41    9819   10766   10766   12811   21194
 ```
 
 There does not seem to be a significant difference in the average number of total steps each day before and after imputing. 
@@ -103,7 +143,8 @@ There does not seem to be a significant difference in the average number of tota
 More information about the mice and Amelia packages can be found here [mice][1] and here [amelia][2]
 [1]: http://doc.utwente.nl/78938/1/Buuren11mice.pdf
 [2]: http://cran.r-project.org/web/packages/Amelia/vignettes/amelia.pdf
-```{r fig.width=10, fig.height=12}
+
+```r
 # Compare total number of steps each day before and after imputing 
 par(mfrow=c(2,1))
 hist(totalSteps, col="red", xlab="Average Total Number of Steps Before Imputing", main="", breaks=10)
@@ -111,8 +152,11 @@ title("Distribution of the total Number of steps\n each day Before and After Imp
 hist(totStepsImp, col="cyan", main="", xlab="Average Total Number of Steps After Imputing", breaks=10)
 ```
 
+![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6-1.png)
+
 ## Are there differences in activity patterns between weekdays and weekends?
-```{r}
+
+```r
 # Extract weekdays
 activityCopy$Days <- weekdays(as.Date(as.character(activityCopy$date)))
 # Create a logical vector d where Days are Saturday or Sunday
@@ -144,15 +188,22 @@ dfWE <- data.frame(avgWE, IntervalWE)
 #activityCopy$interval <- factor(activityCopy$interval)
 ```
 
-```{r fig.width=10, fig.height=6, echo=T}
+
+```r
 # Use base plot
 plot(dfWD$IntervalWD, dfWD$avgWD, type='l', main="Comparison of the Average Number of Steps\n between Weekdays and the Weekend", xlab="Interval", ylab="Number of Steps")
 lines(dfWE$IntervalWE, dfWE$avgWE, col="red")
 legend("topright", c("Weekday", "Weekend"), col=c("black", "red"), lty=1)
+```
+
+![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8-1.png)
+
+```r
 #plot(dfWE$IntervalWE, dfWE$avgWE, type='l', main="Weekend", xlab="Interval", ylab="Number of Steps")
 ```
 
-```{r fig.width=10, fig.height=6, echo=T}
+
+```r
 # Use the lattice Package
 
 # Add a column to the data frames that include weekdays and weekend days
@@ -171,10 +222,15 @@ library(lattice)
 xyplot(Steps ~ Interval | wDays, data=df, type='l', layout=c(1,2), ylab="Average Number of Steps")
 ```
 
-```{r fig.width=10, fig.height=6, echo=T}
+![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-9-1.png)
+
+
+```r
 # Using ggplot2 package
 g <- ggplot(df, aes(Interval, Steps, fill=wDays, colour=wDays))
 g + geom_line() + labs(colour="") + ggtitle("Comparison of the Average Number of Steps\n between Weekdays and Weekend") + ylab("Average Number of Steps")
 ```
+
+![plot of chunk unnamed-chunk-10](figure/unnamed-chunk-10-1.png)
 
 Although the maximum average number of steps during weekdays is higher than that during the weekend, there seems to be on average more activities during the weekend. However, in both weekdays and weekend, most activities seem to take place between 8:30 and 9:30 in the morning. Also, there seems to be no activities between midnight and 5:00 AM throughout the week. Moreover, there are on average more activities during the weekend between 10:00 AM and 8:00 PM. 
